@@ -1,0 +1,145 @@
+{%- style -%}
+  .section-{{ section.id }}-padding {
+    padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+    padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+  }
+
+  @media screen and (min-width: 750px) {
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top }}px;
+      padding-bottom: {{ section.settings.padding_bottom }}px;
+    }
+  }
+
+  .image-gallery__item {
+    position: relative;
+    overflow: hidden;
+    display: block;
+  }
+  .image-gallery__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-gallery__heading {
+    color: #ffffff;
+  }
+  .image-gallery__paragraph{
+    color: #ffffff;
+  }
+  .image-gallery__button{
+    color: #ffffff;
+  }
+
+  .button--{{ block.id }}{
+    background-color: {{ block.settings.color_button}};
+    color: {{ block.settings.color_button_text}}
+  }
+{%- endstyle -%}
+
+<div class="image-gallery">
+  <div class="page-width">
+    <div class="grid grid--1-col grid--2-col-desktop">
+      {% for block in section.blocks %}
+        <div class="grid__item">
+          <a href="{{ block.settings.image_link }}" class="image-gallery__item">
+            {% if block.settings.image != blank %}
+              {% assign mobile_image = block.settings.image_mobile | default: block.settings.image %}
+              {% render 'image',
+                class: 'media media--square media--hover',
+                mobileSrc: mobile_image,
+                desktopSrc: block.settings.image
+              %}
+            {% endif %}
+            <div class="image-gallery__overlay">
+              {% if block.settings.heading_text != blank %}
+                <div class="image-gallery__heading h2 heading-{{ block.id }}">
+                  {{ block.settings.heading_text }}
+                </div>
+              {% endif %}
+              {% if block.settings.paragraph_text != blank %}
+                <div class="image-gallery__paragraph h1 paragraph-{{ block.id }}">
+                  {{ block.settings.paragraph_text }}
+                </div>
+              {% endif %}
+              {% if block.settings.button_text != blank %}
+                <div class="image-gallery__button button--{{ block.id }}">
+                  {{ block.settings.button_text }}
+                </div>
+              {% endif %}
+            </div>
+          </a>
+        </div>
+      {% endfor %}
+    </div>
+  </div>
+</div>
+{% schema %}
+{
+  "name": "Image Gallery 2",
+  "tag": "section",
+  "class": "section",
+  "settings": [],
+  "blocks": [
+    {
+      "type": "image-item",
+      "name": "Image item",
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_mobile",
+          "label": "Image (Mobile)"
+        },
+
+        {
+          "type": "text",
+          "id": "heading_text",
+          "label": "Heading text"
+        },
+        {
+          "type": "richtext",
+          "id": "paragraph_text",
+          "label": "<p>Heading text</p>"
+        },
+        {
+          "type": "text",
+          "id": "button_text",
+          "label": "Button text"
+        },
+         {
+          "type": "url",
+          "id": "image_link",
+          "label": "Image link"
+        },
+        {
+          "type": "color",
+          "id": "color_button",
+          "label": "Pick background color"
+        },
+        {
+          "type": "color",
+          "id": "color_button_text",
+          "label": "Pick button color"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "Image Gallery 2"
+    }
+  ]
+}
+{% endschema %}

@@ -1,0 +1,131 @@
+{%- style -%}
+    .section-{{ section.id }}-padding {
+      padding-top: {{ section.settings.padding_top | times: 0.75 | round: 0 }}px;
+      padding-bottom: {{ section.settings.padding_bottom | times: 0.75 | round: 0 }}px;
+    }
+
+    @media screen and (min-width: 750px) {
+      .section-{{ section.id }}-padding {
+        padding-top: {{ section.settings.padding_top }}px;
+        padding-bottom: {{ section.settings.padding_bottom }}px;
+      }
+    }
+  .isolate{
+      margin-bottom: 5rem;
+    }
+{%- endstyle -%}
+
+<div class="isolate page-width">
+  <div class=" richtext_container richtext--{{ section.id }}">
+    <div class="richtext_container ">
+      {% if section.settings.heading_text != blank %}
+        <div class="h3 heading__text">
+          {{ section.settings.heading_text }}
+        </div>
+      {% endif %}
+      {% if section.settings.paragraph_text != blank %}
+        <div class="paragraph_text">
+          {{ section.settings.paragraph_text }}
+        </div>
+      {% endif %}
+      {% if section.settings.button_text != blank and section.settings.button_url != blank %}
+        <div class="richtext_btn-head">
+          <div>
+            <a class="richtext__btn button button--tertiary" href="{{ section.settings.button_url }}">
+              {{ section.settings.button_text }}
+            </a>
+          </div>
+        </div>
+      {% endif %}
+    </div>
+  </div>
+</div>
+{% style %}
+   .richtext--{{ section.id }}{
+     background-color: {{ section.settings.background_color }};
+   }
+
+  .richtext_btn-head{
+    display: flex;
+    justify-content: center;
+  }
+
+   .richtext_container{
+     padding:10px;
+     margin: auto;
+     display: flex;
+     flex-direction: column;
+     justify-content: center;
+   }
+
+   .heading__text{
+     align-content: center;
+     display: flex;
+     justify-content: center;
+     flex-wrap: wrap;
+   }
+  .paragraph_text{
+    margin: 0 20px;
+    display:flex;
+    justify-content: center;
+  }
+
+   .richtext__btn{
+     border:1px solid black;
+     max-width: fit-content;
+     display: flex;
+     flex-wrap: wrap;
+     align-content: center;
+     margin: 15px 0;
+     max-height: 33px;
+   }
+
+  @media screen and (min-width: 750px) {
+    .richtext_container{
+      flex-direction: row;
+    }
+  }
+{% endstyle %}
+
+{% schema %}
+{
+  "name": "Richtext USP",
+  "tag": "section",
+  "class": "section",
+  "settings": [
+    {
+      "type": "color",
+      "id": "background_color",
+      "label": "Background color"
+    },
+    {
+      "type":"text",
+      "id": "heading_text",
+      "label": "Heading text",
+      "default": "SUMMER SAVINGS"
+    },
+    {
+      "type":"richtext",
+      "id": "paragraph_text",
+      "label": "Paragraph text",
+      "default": "<p>Save additional 10% on all clearance item"
+    },
+    {
+      "type":"text",
+      "id": "button_text",
+      "label": "Button text",
+      "default": "SHOP  NOW"
+    },
+    {
+      "type":"url",
+      "id": "button_url",
+      "label": "Button url"
+    }
+  ],
+  "presets": [
+    {
+      "name": "Richtext USP"
+    }
+  ]
+}
+{% endschema %}

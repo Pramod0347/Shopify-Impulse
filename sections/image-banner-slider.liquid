@@ -1,0 +1,423 @@
+{{ 'block-image-banner.css' | asset_url | stylesheet_tag }}
+
+{%- if block.settings.adapt_height_first_image and block.settings.image != blank -%}
+  {%- style -%}
+    @media screen and (max-width: 749px) {
+      #Banner-{{ block.id }}: : before, #Banner-{{ block.id }}.banner__media::before, #Banner-{{ block.id }}:not(.banner--mobile-bottom) .banner__content::before  {
+        padding-bottom: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}
+        %;
+        content: '';
+        display: block;
+      }
+    }
+
+    @media screen and (min-width: 750px) {
+      #Banner-{{ block.id }}: : before, #Banner-{{ block.id }}.banner__media::before {
+        padding-bottom: {{ 1 | divided_by: block.settings.image.aspect_ratio | times: 100 }}
+        %;
+        content: '';
+        display: block;
+      }
+    }
+  {%- endstyle -%}
+{%- endif -%}
+
+{%- style -%}
+  {% for block in section.blocks %}
+    #Banner-{{ block.id }}::after {
+      opacity: {{ block.settings.image_overlay_opacity | divided_by: 100.0 }};
+    }
+
+      .btn-{{ block-id }}{
+        color: {{ block.settings.button__text__color }};
+        background-color: {{ block.settings.button__color }};
+      }
+  {% endfor %}}
+{%- endstyle -%}
+
+{% for block in section.blocks %}
+  <div
+    id="Banner-{{ block.id }}"
+    class="banner banner--content-align-{{ block.settings.desktop_content_alignment }} banner--content-align-mobile-{{ block.settings.mobile_content_alignment }} banner--{{ block.settings.image_height }}{% if block.settings.stack_images_on_mobile and block.settings.image != blank and block.settings.image_2 != blank %} banner--stacked{% endif %}{% if block.settings.adapt_height_first_image and block.settings.image != blank %} banner--adapt{% endif %}{% if block.settings.show_text_below %} banner--mobile-bottom{%- endif -%}{% if block.settings.show_text_box == false %} banner--desktop-transparent{% endif %}"
+  >
+    {%- if block.settings.image != blank -%}
+      <div class="banner__media media{% if block.settings.image == blank and block.settings.image_2 == blank %} placeholder{% endif %}{% if block.settings.image_2 != blank %} banner__media-half{% endif %}">
+        {%- liquid
+          assign image_height = block.settings.image.width | divided_by: block.settings.image.aspect_ratio
+          if block.settings.image_2 != blank
+            assign image_class = 'banner__media-image-half'
+          endif
+          if block.settings.image_2 != blank and block.settings.stack_images_on_mobile
+            assign sizes = '(min-width: 750px) 50vw, 100vw'
+          elsif block.settings.image_2 != blank
+            assign sizes = '50vw'
+          else
+            assign sizes = '100vw'
+          endif
+        -%}
+        {{
+          block.settings.image
+          | image_url: width: 1500
+          | image_tag:
+            loading: 'lazy',
+            width: block.settings.image.width,
+            height: image_height,
+            class: image_class,
+            sizes: sizes,
+            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
+            alt: block.settings.image.alt
+          | escape
+        }}
+      </div>
+    {%- elsif block.settings.image_2 == blank -%}
+      <div class="banner__media media{% if block.settings.image == blank and block.settings.image_2 == blank %} placeholder{% endif %}{% if block.settings.image_2 != blank %} banner__media-half{% endif %}">
+        {{ 'lifestyle-2' | placeholder_svg_tag: 'placeholder-svg' }}
+      </div>
+    {%- endif -%}
+    {%- if block.settings.image_2 != blank -%}
+      <div class="banner__media media{% if block.settings.image != blank %} banner__media-half{% endif %}">
+        {%- liquid
+          assign image_height_2 = block.settings.image_2.width | divided_by: block.settings.image_2.aspect_ratio
+          if block.settings.image != blank
+            assign image_class_2 = 'banner__media-image-half'
+          endif
+          if block.settings.image != blank and block.settings.stack_images_on_mobile
+            assign sizes = '(min-width: 750px) 50vw, 100vw'
+          elsif block.settings.image != blank
+            assign sizes = '50vw'
+          else
+            assign sizes = '100vw'
+          endif
+        -%}
+        {{
+          block.settings.image_2
+          | image_url: width: 1500
+          | image_tag:
+            loading: 'lazy',
+            width: block.settings.image_2.width,
+            height: image_height_2,
+            class: image_class_2,
+            sizes: sizes,
+            widths: '375, 550, 750, 1100, 1500, 1780, 2000, 3000, 3840',
+            alt: block.settings.image_2.alt
+          | escape
+        }}
+      </div>
+    {%- endif -%}
+    <div class="banner__content banner__content--{{ block.settings.desktop_content_position }} page-width">
+      <div class="banner__box content-container content-container--full-width-mobile color-{{ block.settings.color_scheme }} gradient">
+        {%- case block.type -%}
+          {%- when 'heading' -%}
+            <h2 class="banner__heading {{ block.settings.heading_size }}" {{ block.shopify_attributes }}>
+              <span>{{ block.settings.heading | escape }}</span>
+            </h2>
+          {%- when 'text' -%}
+            <div class="banner__text {{ block.settings.text_style }}" {{ block.shopify_attributes }}>
+              <span>{{ block.settings.text | escape }}</span>
+            </div>
+          {%- when 'buttons' -%}
+            <div
+              class="banner__buttons{% if block.settings.button_label_1 != blank and block.settings.button_label_2 != blank %} banner__buttons--multiple{% endif %}"
+              {{ block.shopify_attributes }}
+            >
+              {%- if block.settings.button_label_1 != blank -%}
+                <a
+                  {% if block.settings.button_link_1 == blank %}
+                    role="link"aria-disabled="true"
+                  {% else %}
+                    href="{{ block.settings.button_link_1 }}"
+                  {% endif -%}
+                  class="btn-{{ block-id }} button{% if block.settings.button_style_secondary_1 %} button--secondary{% else %} button--primary{% endif %}"
+                >
+                  {{- block.settings.button_label_1 | escape -}}
+                </a>
+              {%- endif -%}
+              {%- if block.settings.button_label_2 != blank -%}
+                <a
+                  {% if block.settings.button_link_2 == blank %}
+                    role="link"aria-disabled="true"
+                  {% else %}
+                    href="{{ block.settings.button_link_2 }}"
+                  {% endif -%}
+                  class="btn-{{ block-id }} button{% if block.settings.button_style_secondary_2 %} button--secondary{% else %} button--primary{% endif %}"
+                >
+                  {{- block.settings.button_label_2 | escape -}}
+                </a>
+              {%- endif -%}
+            </div>
+        {%- endcase -%}
+      </div>
+    </div>
+  </div>
+{% endfor %}
+
+{% schema %}
+{
+  "name": "image banner slider",
+  "tag": "section",
+  "class": "section",
+  "blocks": [
+    {
+      "type": "heading",
+      "name": "Image slider",
+      "limit": 3,
+      "settings": [
+        {
+          "type": "image_picker",
+          "id": "image",
+          "label": "Image"
+        },
+        {
+          "type": "image_picker",
+          "id": "image_2",
+          "label": "Image 2"
+        },
+        {
+          "type": "range",
+          "id": "image_overlay_opacity",
+          "min": 0,
+          "max": 100,
+          "step": 10,
+          "unit": "%",
+          "label": "Image overlay opacity",
+          "default": 0
+        },
+        {
+          "type": "select",
+          "id": "image_height",
+          "options": [
+            {
+              "value": "small",
+              "label": "Small"
+            }, {
+              "value": "medium",
+              "label": "Medium"
+            }, {
+              "value": "large",
+              "label": "Large"
+            }
+          ],
+          "default": "medium",
+          "label": "Medium",
+          "info": "For best results, use an image with a 3:2 aspect ratio."
+        }, {
+          "type": "checkbox",
+          "id": "adapt_height_first_image",
+          "default": false,
+          "label": "Adapt section height to first image size",
+          "info": "Overwrites image banner height setting when checked."
+        }, {
+          "type": "select",
+          "id": "desktop_content_position",
+          "options": [
+            {
+              "value": "top-left",
+              "label": "top left"
+            },
+            {
+              "value": "top-center",
+              "label": "top center"
+            },
+            {
+              "value": "top-right",
+              "label": "top right"
+            },
+            {
+              "value": "middle-left",
+              "label": "middle left"
+            }, {
+              "value": "middle-center",
+              "label": "middle center"
+            }, {
+              "value": "middle-right",
+              "label": "middle right"
+            }, {
+              "value": "bottom-left",
+              "label": "bottom left"
+            }, {
+              "value": "bottom-center",
+              "label": "bottom center"
+            }, {
+              "value": "bottom-right",
+              "label": "bottom right"
+            }
+          ],
+          "default": "middle-center",
+          "label": "middle center"
+        }, {
+          "type": "checkbox",
+          "id": "show_text_box",
+          "default": true,
+          "label": "Show container on desktop"
+        }, {
+          "type": "select",
+          "id": "desktop_content_alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            }, {
+              "value": "center",
+              "label": "Center"
+            }, {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center",
+          "label": "Center"
+        }, {
+          "type": "select",
+          "id": "color_scheme",
+          "options": [
+            {
+              "value": "accent-1",
+              "label": "accent 1"
+            },
+            {
+              "value": "accent-2",
+              "label": "accent 2"
+            },
+            {
+              "value": "background-1",
+              "label": "background 1"
+            },
+            {
+              "value": "background-2",
+              "label": "background 2"
+            }, {
+              "value": "inverse",
+              "label": "inverse"
+            }
+          ],
+          "default": "background-1",
+          "label": "background 1",
+          "info": "Visible when container displayed"
+        }, {
+          "type": "header",
+          "content": "MOBILE LAYOUT"
+        }, {
+          "type": "select",
+          "id": "mobile_content_alignment",
+          "options": [
+            {
+              "value": "left",
+              "label": "Left"
+            }, {
+              "value": "center",
+              "label": "Center"
+            }, {
+              "value": "right",
+              "label": "Right"
+            }
+          ],
+          "default": "center",
+          "label": "Center"
+        }, {
+          "type": "checkbox",
+          "id": "stack_images_on_mobile",
+          "default": true,
+          "label": "Stack images on mobile"
+        }, {
+          "type": "checkbox",
+          "id": "show_text_below",
+          "default": true,
+          "label": "Show container on mobile"
+        }, {
+          "type": "text",
+          "id": "heading",
+          "default": "Image banner",
+          "label": "Heading"
+        }, {
+          "type": "select",
+          "id": "heading_size",
+          "options": [
+            {
+              "value": "h2",
+              "label": "Small"
+            }, {
+              "value": "h1",
+              "label": "Medium"
+            }, {
+              "value": "h0",
+              "label": "Large"
+            }
+          ],
+          "default": "h1",
+          "label": "Heading size"
+        }, {
+          "type": "text",
+          "id": "text",
+          "default": "Give customers details about the banner image(s) or content on the template.",
+          "label": "Description"
+        }, {
+          "type": "select",
+          "id": "text_style",
+          "options": [
+            {
+              "value": "body",
+              "label": "body"
+            }, {
+              "value": "subtitle",
+              "label": "subtitle"
+            }, {
+              "value": "caption-with-letter-spacing",
+              "label": "Upcase"
+            }
+          ],
+          "default": "body",
+          "label": "body"
+        }, {
+          "type": "text",
+          "id": "button_label_1",
+          "default": "Button label",
+          "label": "First button label",
+          "info": "Leave the label blank to hide the button."
+        }, {
+          "type": "url",
+          "id": "button_link_1",
+          "label": "First button link"
+        }, {
+          "type": "color",
+          "id": "button__text__color",
+          "label": "Button color"
+        }, {
+          "type": "color",
+          "id": "button__color",
+          "label": "Background color"
+        }, {
+          "type": "checkbox",
+          "id": "button_style_secondary_1",
+          "default": false,
+          "label": "Use outline button style"
+        }, {
+          "type": "text",
+          "id": "button_label_2",
+          "default": "Button label",
+          "label": "Second button label",
+          "info": "Leave the label blank to hide the button."
+        }, {
+          "type": "url",
+          "id": "button_link_2",
+          "label": "Second button link"
+        }, {
+          "type": "checkbox",
+          "id": "button_style_secondary_2",
+          "default": false,
+          "label": "Use outline button style"
+        }
+      ]
+    }
+  ],
+  "presets": [
+    {
+      "name": "image banner slider",
+      "blocks": [
+        {
+          "type": "heading"
+        }
+      ]
+    }
+  ]
+}
+{% endschema %}
