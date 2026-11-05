@@ -33,7 +33,7 @@
     {{ content_for_header }}
 
     {{ 'flickity.css' | asset_url | stylesheet_tag }}
-    {{ 'flickity.js' | asset_url | | script_tag }}
+    {{ 'flickity.js' | asset_url | script_tag }}
 
     {%- liquid
       assign body_font_bold = settings.type_body_font | font_modify: 'weight', 'bold'
@@ -318,3 +318,13 @@
     {%- endif -%}
   </body>
 </html>
+{% comment %}
+
+This file has been rewritten to preserve the original behavior.
+
+---
+Changes:
+- from: "{{ 'flickity.js' | asset_url | | script_tag }}"
+  to: "{{ 'flickity.js' | asset_url | script_tag }}"
+  position: 1381..1425
+{% endcomment %}
